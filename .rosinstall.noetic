@@ -5,12 +5,16 @@
     local-name: dynamixel_urdf
     uri: https://github.com/jsk-enshu/dynamixel_urdf.git
 - git:
+    # use python3_pykdl 200~https://github.com/arebgun/dynamixel_motor/pull/102
+    # http://wiki.ros.org/noetic/Migration#Use_Orocos_KDL_and_BFL_rosdep_keys
     local-name: dynamixel_motor
-    uri: https://github.com/arebgun/dynamixel_motor.git
+    uri: https://github.com/jsk-enshu/dynamixel_motor.git
 - git:
+    # use python3_pykdl https://github.com/yujinrobot/kobuki/pull/432
+    # http://wiki.ros.org/noetic/Migration#Use_Orocos_KDL_and_BFL_rosdep_keys
     local-name: kobuki
-    uri: https://github.com/yujinrobot/kobuki.git
-    version: melodic
+    uri: https://github.com/jsk-enshu/kobuki.git
+    version: package_format3_use_pykdl
 - git:
     local-name: kobuki_desktop
     uri: https://github.com/yujinrobot/kobuki_desktop.git
@@ -24,9 +28,11 @@
     uri: https://github.com/turtlebot/turtlebot_simulator.git
     version: melodic
 - git:
+    # use python3_pykdl https://github.com/turtlebot/turtlebot_apps/pull/181
+    # http://wiki.ros.org/noetic/Migration#Use_Orocos_KDL_and_BFL_rosdep_keys
     local-name: turtlebot_apps
-    uri: https://github.com/turtlebot/turtlebot_apps.git
-    version: indigo
+    uri: https://github.com/jsk-enshu/turtlebot_apps.git
+    version: package_format3_use_pykdl
 - git:
     local-name: turtlebot_interactions
     uri: https://github.com/turtlebot/turtlebot_interactions.git
@@ -48,14 +54,14 @@
     uri: https://github.com/yujinrobot/yocs_msgs.git
     version: devel # until release of ros-noetic-yocs-msgs
 - git:
-    local-name: orocos_kinematics_dynamics
-    uri: https://github.com/orocos/orocos_kinematics_dynamics.git
-    version: master # until release of ros-noetic-orocos-kdl
-- git:
     local-name: std_capabilities
     uri: https://github.com/osrf/std_capabilities.git
     version: master # until release of ros-noetic-std-capabilities
 - git:
-    local-name: jsk_pr2eus
-    uri: https://github.com/jsk-ros-pkg/jsk_pr2eus.git
-    version: master # add CATKIN_IGNORE in packages except for pr2eus
+    # Use noetic support. https://github.com/ros-perception/ar_track_alvar/pull/89
+    local-name: ar_track_alvar
+    uri: https://github.com/pmusau17/ar_track_alvar
+    version: noetic-devel
+- tar:
+    local-name: pr2eus
+    uri: https://github.com/tork-a/jsk_pr2eus-release/archive/refs/tags/release/noetic/pr2eus/0.3.15-1.tar.gz
