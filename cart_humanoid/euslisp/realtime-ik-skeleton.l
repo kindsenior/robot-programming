@@ -66,13 +66,13 @@
                    (ros::ros-debug (format nil "~a" bone-names))
 
                    (when (and rs-ls-idx re-rw-idx le-lw-idx)
-                     (setq rs-ls-bone     (elt bones rs-ls-idx) ;; r_shoulder -> r_shoulder
+                     (setq rs-ls-bone     (elt bones rs-ls-idx) ;; r_shoulder -> l_shoulder
                            r-shoulder-pos (ros::tf-point->pos (send rs-ls-bone :start_point))
                            l-shoulder-pos (ros::tf-point->pos (send rs-ls-bone :end_point))
                            re-rw-bone     (elt bones re-rw-idx) ;; r_elbow -> r_wrist
-                           r-wrist-pos     (ros::tf-point->pos (send re-rw-bone :end_point))
+                           r-wrist-pos    (ros::tf-point->pos (send re-rw-bone :end_point))
                            le-lw-bone     (elt bones le-lw-idx) ;; l_elbow -> l_wrist
-                           l-wrist-pos     (ros::tf-point->pos (send le-lw-bone :end_point))
+                           l-wrist-pos    (ros::tf-point->pos (send le-lw-bone :end_point))
                            )
 
                      (ros::ros-info (format nil "=============================="))
@@ -122,8 +122,6 @@
                          (send *robot* :larm :inverse-kinematics l-hand :rotation-axis nil))
                   (ros::ros-warn "ik solved")
                   )
-
-                  (send *irtviewer* :draw-objects :flush nil)
                   )
               )
   )
