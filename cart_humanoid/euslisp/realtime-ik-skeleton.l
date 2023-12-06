@@ -32,6 +32,8 @@
 (setq human-body-coord (make-coords)
       l-shoulder-coord (make-coords)
       r-shoulder-coord (make-coords)
+      l-elbow-coord    (make-coords)
+      r-elbow-coord    (make-coords)
       l-hand-coord     (make-coords)
       r-hand-coord     (make-coords)
       l-hand-target    (make-coords)
@@ -39,7 +41,7 @@
       )
 
 (objects (list *robot* *camera-color-optical-frame*
-               ;; human-body-coord l-shoulder-coord r-shoulder-coord
+               human-body-coord l-shoulder-coord r-shoulder-coord l-elbow-coord r-elbow-coord
                l-hand-coord r-hand-coord))
 
 (defclass Pointing
@@ -70,8 +72,10 @@
                            r-shoulder-pos (ros::tf-point->pos (send rs-ls-bone :start_point))
                            l-shoulder-pos (ros::tf-point->pos (send rs-ls-bone :end_point))
                            re-rw-bone     (elt bones re-rw-idx) ;; r_elbow -> r_wrist
+                           r-elbow-pos    (ros::tf-point->pos (send re-rw-bone :start_point))
                            r-wrist-pos    (ros::tf-point->pos (send re-rw-bone :end_point))
                            le-lw-bone     (elt bones le-lw-idx) ;; l_elbow -> l_wrist
+                           l-elbow-pos    (ros::tf-point->pos (send le-lw-bone :start_point))
                            l-wrist-pos    (ros::tf-point->pos (send le-lw-bone :end_point))
                            )
 
@@ -79,6 +83,13 @@
                      (ros::ros-info (format nil "detected right_wrist at ~a!!" r-wrist-pos))
                      ;; (speak-jp (format nil "~A" dis) :wait t)
                      ;; (speak-jp "センチメートルです"  :wait t)
+
+                     (setq l-shoulder-pos (send *camera-color-optical-frame* :transform-vector l-shoulder-pos)
+                           r-shoulder-pos (send *camera-color-optical-frame* :transform-vector r-shoulder-pos)
+                           l-elbow-pos    (send *camera-color-optical-frame* :transform-vector l-elbow-pos)
+                           r-elbow-pos    (send *camera-color-optical-frame* :transform-vector r-elbow-pos)
+                           l-wrist-pos    (send *camera-color-optical-frame* :transform-vector l-wrist-pos)
+                           r-wrist-pos    (send *camera-color-optical-frame* :transform-vector r-wrist-pos))
 
                      ;; calculate human body coord from the shoulder vector
                      (setq rs-ls-vec (v- l-shoulder-pos r-shoulder-pos)
@@ -91,21 +102,24 @@
                                                         :rot (transpose (matrix x-axis y-axis z-axis)))
                            )
 
-                     (send l-shoulder-coord :locate l-shoulder-pos :world)
-                     (send r-shoulder-coord :locate r-shoulder-pos :world)
+                     (send l-shoulder-coord :move-to (make-coords :pos l-shoulder-pos) :world)
+                     (send r-shoulder-coord :move-to (make-coords :pos r-shoulder-pos) :world)
+                     (send l-elbow-coord    :move-to (make-coords :pos l-elbow-pos) :world)
+                     (send r-elbow-coord    :move-to (make-coords :pos r-elbow-pos) :world)
                      (send l-hand-coord     :move-to (make-coords :pos l-wrist-pos) :world)
                      (send r-hand-coord     :move-to (make-coords :pos r-wrist-pos) :world)
 
                      ;; describe in the coord relative to robot neck frame
                      (setq body->neck (send human-body-coord :transformation (send (send *robot* :head :neck-y) :parent-link :worldcoords) :local))
+
+                     (send human-body-coord :transform body->neck :world)
+                     (send r-shoulder-coord :transform body->neck :world)
+                     (send l-shoulder-coord :transform body->neck :world)
+                     (send r-elbow-coord :transform body->neck :world)
+                     (send l-elbow-coord :transform body->neck :world)
                      (send r-hand-coord :transform body->neck :world)
                      (send l-hand-coord :transform body->neck :world)
 
-                     ;; swap x elements
-                     (mapc #'(lambda (coord)
-                               (let ((p (send coord :worldpos)))
-                                 (send coord :locate (floatvector (- (elt p 0)) (elt p 1) (elt p 2)) :world)))
-                           (list l-hand-coord r-hand-coord))
                      (send self :move-hand l-hand-coord r-hand-coord)
 
                      (send *irtviewer* :draw-objects)
